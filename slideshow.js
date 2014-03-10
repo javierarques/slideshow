@@ -1,19 +1,21 @@
-(function($) {
-	
-	$.fn.slideshow = function(opts) {
-		
+(function ($){
+	$.fn.slideshow = function (opts) {
+
+        'use strict';
+
 		$.fn.slideshow.defaults = {
 			fadeDuration : 400,
-			interval : 3000,
+			interval : 5000,
 			prevButtonText : 'previous',
-			nextButtonText : 'next'
+			nextButtonText : 'next',
+			showNavigation: true
 		};
 
 		var settings = $.extend({}, $.fn.slideshow.defaults, opts);
 		
-		return this.each(function() {
+		return this.each(function () {
 
-			var $slideshow = $(this).prependTo('body'),
+			var $slideshow = $(this),
 				$slides =  $(this).find('li').hide(),
 				currentSlide = $slides.first(),
 				timeout = 0,
@@ -34,12 +36,14 @@
 						nextSlide = findNext();
 					}
 
+
 				    currentSlide.stop().fadeOut( settings.fadeDuration, function () {
-				        nextSlide.fadeIn( settings.fadeDuration);
-				        currentSlide = nextSlide;
+				        nextSlide.stop().fadeIn( settings.fadeDuration, function() {
+				        	currentSlide = nextSlide;	
+				        });
+				        
 				    });
 
-				    
 
 					// set the timeout for showing
 					// the next item in 5 seconds
@@ -72,7 +76,7 @@
 		        	// Prev button
 			        var prev = $("<button>Prev</button>").on('click', function () {
 			        	moveSlide( findPrev(), true);
-			        }). appendTo( nav );
+			        }). appendTo( nav, true);
 
 		        
 			        // Slides navigation
@@ -88,12 +92,15 @@
 		        	// Next button
 			        var next = $("<button>Next</button>").on('click', function () {
 			        	moveSlide( findNext(), true);
-			        }). appendTo( nav );	
+			        }). appendTo( nav, true);	
 
 
 				}
 
-			createNavigation();
+			if ( settings.showNavigation ) {
+				createNavigation();	
+			}
+			
 
 			// Initialize slider
 			$slides.eq(0).fadeIn( settings.fadeDuration, function () { 
@@ -110,5 +117,3 @@
 	}
 	
 })(jQuery);
-
-$('#slideshow').slideshow( { interval: 2000, fadeDuration: 200 });
